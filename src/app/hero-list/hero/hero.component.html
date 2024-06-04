@@ -10,11 +10,12 @@
       [preview]="true"
     />
     <h2>{{ hero.name }}</h2>
-    <p>{{ hero.description }}</p>
+    <p *ngIf="hero.description; else noDescription">{{ hero.description }}</p>
   </div>
 
   <div class="btn-group">
     <p-carousel
+      *ngIf="comics.length > 0; else noComics"
       [value]="comics"
       [numVisible]="5"
       [numScroll]="3"
@@ -22,7 +23,7 @@
       [responsiveOptions]="responsiveOptions"
     >
       <ng-template let-product pTemplate="item">
-        <p-progressSpinner class="loader" *ngIf="false"></p-progressSpinner>
+        <p-progressSpinner class="loader" *ngIf="loading"></p-progressSpinner>
 
         <div
           class="border-1 surface-border border-round m-2 p-3 comic"
@@ -30,7 +31,7 @@
         >
           <div class="">
             <div class="relative mx-auto">
-              <img src="{{ product.image }}" class="border-round" />
+              <img src="{{ product?.image + '.jpg' }}" class="border-round" />
             </div>
           </div>
           <p>{{ product.name }}</p>
@@ -39,3 +40,10 @@
     </p-carousel>
   </div>
 </div>
+
+<ng-template #noComics>
+  <p>No comics found!</p>
+</ng-template>
+<ng-template #noDescription>
+  <p>No Description found!</p>
+</ng-template>
