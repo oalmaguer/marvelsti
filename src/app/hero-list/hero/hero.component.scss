@@ -49,6 +49,9 @@
 .comic {
   transition: all 0.3s ease-out;
   img {
+    padding: 0.5rem;
+    border: 2px solid #d3d3d3;
+    background: crimson;
     width: 170px;
     height: 250px;
     object-fit: cover;
