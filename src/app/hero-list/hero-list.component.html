@@ -1,0 +1,55 @@
+<div class="container">
+  <h1>Heroes Populares</h1>
+  <div class="pop-hero-card">
+    <div
+      class="img"
+      *ngFor="let hero of popularHeroes"
+      (click)="goToHero(hero.data.results[0])"
+    >
+      <img
+        [src]="
+          hero.data.results[0].thumbnail.path +
+          '.' +
+          hero.data.results[0].thumbnail.extension
+        "
+        alt="..."
+      />
+      <p style="color: black; text-align: center">
+        {{ hero.data.results[0].name }}
+      </p>
+    </div>
+  </div>
+
+  <h1 (click)="selectedHero = null" [ngClass]="{ selected: selectedHero }">
+    {{ selectedHero ? "Ver todos los heroes" : "Todos los heroes" }}
+  </h1>
+  <div class="cards" *ngIf="!selectedHero; else selectedTemplate">
+    <div class="card" *ngFor="let hero of heroes" (click)="goToHero(hero)">
+      <div class="card-body">
+        <img
+          src="{{ hero.thumbnail.path }}.{{ hero.thumbnail.extension }}"
+          alt=""
+        />
+        <div class="info">
+          <p>{{ hero.name }}</p>
+          <div class="btn-group">
+            <button>Ver mas información</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noDescription>
+    <p>No description available</p>
+  </ng-template>
+
+  <ng-template #selectedTemplate>
+    <app-hero [hero]="dataService.heroDetails$ | async"></app-hero>
+  </ng-template>
+
+  <div class="footer" *ngIf="!selectedHero">
+    <button [disabled]="page === 1" (click)="paginate('back')">Previous</button>
+    <button (click)="paginate('next')">Next</button>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<div class="container">
+  <div
+    class="
+  "
+  >
+    <p-image
+      src="{{ hero.thumbnail.path }}.{{ hero.thumbnail.extension }}"
+      alt="Image"
+      width="250"
+      [preview]="true"
+    />
+    <h2>{{ hero.name }}</h2>
+    <p>{{ hero.description }}</p>
+  </div>
+
+  <div class="btn-group">
+    <p-carousel
+      [value]="comics"
+      [numVisible]="5"
+      [numScroll]="3"
+      [circular]="false"
+      [responsiveOptions]="responsiveOptions"
+    >
+      <ng-template let-product pTemplate="item">
+        <p-progressSpinner class="loader" *ngIf="false"></p-progressSpinner>
+
+        <div
+          class="border-1 surface-border border-round m-2 p-3 comic"
+          (click)="selectComic(product)"
+        >
+          <div class="">
+            <div class="relative mx-auto">
+              <img src="{{ product.image }}" class="border-round" />
+            </div>
+          </div>
+          <p>{{ product.name }}</p>
+        </div>
+      </ng-template>
+    </p-carousel>
+  </div>
+</div>
