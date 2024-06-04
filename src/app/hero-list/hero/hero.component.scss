@@ -2,6 +2,15 @@
   span img {
     height: 250px;
   }
+
+  .carousel-prev-icon {
+    color: black;
+    border-radius: 50%;
+    height: 48px;
+    width: 48px;
+    padding: 1rem;
+    background: whitesmoke;
+  }
 }
 
 .container {
@@ -56,6 +65,7 @@
   .container {
     flex-direction: column;
     text-align: center;
+    align-items: center;
   }
 
   .btn-group {

@@ -4,7 +4,7 @@ import { ImageModule } from 'primeng/image';
 import { CarouselModule } from 'primeng/carousel';
 import { ButtonModule } from 'primeng/button';
 import { DataService } from '../../data.service';
-import { forkJoin, map } from 'rxjs';
+import { Subject, forkJoin, map, takeUntil } from 'rxjs';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
@@ -25,6 +25,8 @@ export class HeroComponent {
   comics: any = [];
   loading = false;
   responsiveOptions: any;
+  destroy$ = new Subject<void>();
+
   constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
@@ -54,9 +56,6 @@ export class HeroComponent {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
-    //Add '${implements OnChanges}' to the class.
-
     this.getComicImages();
   }
 
@@ -64,50 +63,55 @@ export class HeroComponent {
     this.loading = true;
     this.comics = this.hero.comics.items;
 
-    // const apiCalls = [];
+    const apiCalls = [];
 
     for (let i = 0; i < this.comics.length; i++) {
-      this.comics[i].image =
-        'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg';
-      // apiCalls.push(
-      //   this.dataService.getComicData(this.comics[i].resourceURI.split('/')[6])
-      // );
+      // this.comics[i].image =
+      //   'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg';
+      apiCalls.push(
+        this.dataService.getComicData(this.comics[i].resourceURI.split('/')[6])
+      );
     }
 
-    //
+    forkJoin(apiCalls)
+      .pipe(
+        map((res: any) => {
+          return res.map((res: any) => {
+            return {
+              image: res.data.results[0].thumbnail.path,
+              url: res.data.results[0].urls[0].url,
+            };
+          });
+        }),
+        map((res) =>
+          res.map((data: any, index: any) => {
+            this.comics[index].image = data.image;
+            this.comics[index].url = data.url;
+          })
+        )
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loading = false;
+      });
+    for (let i = 0; i < this.comics.length; i++) {
+      this.comics[i].id = this.comics[i].resourceURI.split('/')[6];
 
-    // forkJoin(apiCalls)
-    //   .pipe(
-    //     map((res: any) => {
-    //       return res.map((res: any) => {
-    //         return {
-    //           image: res.data.results[0].thumbnail.path,
-    //           url: res.data.results[0].urls[0].url,
-    //         };
-    //       });
-    //     }),
-    //     map((res) =>
-    //       res.map((data: any, index: any) => {
-    //         this.comics[index].image = data.image;
-    //         this.comics[index].url = data.url;
-    //       })
-    //     )
-    //   )
-    //   .subscribe(() => {
-    //     this.loading = false;
-
-    //     // this.comics = results;
-    //   });
-    // for (let i = 0; i < this.comics.length; i++) {
-    //   this.comics[i].id = this.comics[i].resourceURI.split('/')[6];
-
-    //   this.dataService.getComicData(this.comics[i].id).subscribe((res) => {
-    //     this.comics[i].image = res.data.results[0].thumbnail.path;
-    //   });
-    // }
+      this.dataService
+        .getComicData(this.comics[i].id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((res: any) => {
+          this.comics[i].image = res.data.results[0].thumbnail.path;
+        });
+    }
   }
 
   selectComic(comic: any) {
     window.open(comic.url, '_blank');
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

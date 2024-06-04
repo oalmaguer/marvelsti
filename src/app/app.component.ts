@@ -2,16 +2,21 @@ import { Component } from '@angular/core';
 import { HeroListComponent } from './hero-list/hero-list.component';
 import { DataService } from './data.service';
 import { MessagesModule } from 'primeng/messages';
+import { Subject, takeUntil } from 'rxjs';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeroListComponent, MessagesModule],
+  imports: [HeroListComponent, MessagesModule, ToastModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
   title = 'sti';
+  destroy$ = new Subject<void>();
+  messages: any[] = [];
+  showError = false;
 
   constructor(private dataService: DataService) {}
 
@@ -20,11 +25,20 @@ export class AppComponent {
   }
 
   getHeroes(): void {
-    this.dataService.getHeroes().subscribe((res: any) => {
-      if (res.code === 200) {
-        this.dataService.heroesObs$.next(res.data.results);
-      } else {
-      }
-    });
+    this.dataService
+      .getHeroes()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: any) => {
+        this;
+        if (res.code === 200) {
+          this.dataService.heroesObs$.next(res.data.results);
+        } else {
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

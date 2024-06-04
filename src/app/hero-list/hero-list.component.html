@@ -1,28 +1,24 @@
 <div class="container">
-  <h1>Heroes Populares</h1>
+  <h2>Heroes Populares</h2>
   <div class="pop-hero-card">
     <div
       class="img"
       *ngFor="let hero of popularHeroes"
-      (click)="goToHero(hero.data.results[0])"
+      (click)="goToHero(hero)"
     >
       <img
-        [src]="
-          hero.data.results[0].thumbnail.path +
-          '.' +
-          hero.data.results[0].thumbnail.extension
-        "
+        [src]="hero.thumbnail.path + '.' + hero.thumbnail.extension"
         alt="..."
       />
       <p style="color: black; text-align: center">
-        {{ hero.data.results[0].name }}
+        {{ hero.name }}
       </p>
     </div>
   </div>
 
-  <h1 (click)="selectedHero = null" [ngClass]="{ selected: selectedHero }">
+  <h3 (click)="selectedHero = null" [ngClass]="{ selected: selectedHero }">
     {{ selectedHero ? "Ver todos los heroes" : "Todos los heroes" }}
-  </h1>
+  </h3>
   <div class="cards" *ngIf="!selectedHero; else selectedTemplate">
     <div class="card" *ngFor="let hero of heroes" (click)="goToHero(hero)">
       <div class="card-body">
@@ -49,7 +45,19 @@
   </ng-template>
 
   <div class="footer" *ngIf="!selectedHero">
-    <button [disabled]="page === 1" (click)="paginate('back')">Previous</button>
-    <button (click)="paginate('next')">Next</button>
+    <p-button
+      [rounded]="true"
+      severity="danger"
+      label="Previous"
+      [disabled]="page === 0"
+      (click)="paginate('back')"
+    ></p-button>
+    <p>{{ page }}</p>
+    <p-button
+      [rounded]="true"
+      severity="danger"
+      label="Next"
+      (click)="paginate('next')"
+    ></p-button>
   </div>
 </div>
