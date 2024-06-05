@@ -51,7 +51,7 @@ export class DataService {
     if (storedData) {
       this.heroesObs$.next(storedData);
       if (!page) {
-        return of(storedData);
+        return of(storedData[0]);
       }
     }
     return this.http

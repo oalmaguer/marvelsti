@@ -29,8 +29,9 @@ export class AppComponent {
       .getHeroes()
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-        if (res[0]) {
-          this.dataService.heroesObs$.next(res[0]);
+        console.log(res);
+        if (res) {
+          this.dataService.heroesObs$.next(res);
         }
       });
   }
