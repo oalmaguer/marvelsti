@@ -29,10 +29,8 @@ export class AppComponent {
       .getHeroes()
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-        this;
-        if (res.code === 200) {
-          this.dataService.heroesObs$.next(res.data.results);
-        } else {
+        if (res[0]) {
+          this.dataService.heroesObs$.next(res[0]);
         }
       });
   }
